@@ -20,7 +20,7 @@ class Tutorial3 extends Phaser.Scene {
                 case '2':
                     // this.sound.play('StartGameSFX');
                     this.scene.stop('tutorial3Scene');
-                    this.scene.start('playScene');
+                    this.scene.start('banditScene');
                     break;
             }
         });
