@@ -17,8 +17,17 @@ class Load extends Phaser.Scene {
         });
 
         this.load.path = './assets/';
-        // load graphics assets
+        // load graphics assets :
+        // Sprites :
         this.load.image('Player', 'img/MainCharacter.png');
+
+        // Screens :
+        this.load.image('Menu', 'img/MainMenu.png');
+        this.load.image('Credits', 'img/Credits.png');
+        this.load.image('DuelTutorial', 'img/DuelInstructions.png');
+        this.load.image('Scene2Tutorial', 'img/Scene2Instructions.png');
+        this.load.image('Scene3Tutorial', 'img/Scene3Instructions.png');
+        
         //this.load.spritesheet('walk', 'img/walkAnimation.png', {frameWidth: 64, frameHeight: 64, startFrame: 0, endFrame: 6});
         // load audio assets
         //this.load.audio('BackMusic', ['audio/NocturneOP27NO2.wav']);
