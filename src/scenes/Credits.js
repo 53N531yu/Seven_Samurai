@@ -8,14 +8,20 @@ class Credits extends Phaser.Scene {
         this.credits = this.add.tileSprite(0, 0, 0, 0, 'Credits').setOrigin(0, 0);
         
         cursors = this.input.keyboard.createCursorKeys();  
+
+        // check for UP input
+        this.input.keyboard.on('keydown', (event) => {
+            //console.log(event);
+            switch(event.key) {
+                case '1':
+                    // this.sound.play('StartGameSFX');
+                    this.scene.stop('creditsScene');
+                    this.scene.start('titleScene');
+                    break;
+            }
+        });
     }
 
     update() {
-        // check for UP input
-        if (Phaser.Input.Keyboard.JustDown(cursors.left)) {
-            this.sound.play('StartGameSFX');
-            this.scene.stop('creditsScene');
-            this.scene.start('titleScene');
-        }
     }
 }

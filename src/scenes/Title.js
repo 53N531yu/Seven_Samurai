@@ -9,39 +9,37 @@ class Title extends Phaser.Scene {
 
     create() {
         // add title screen text
-        this.title = this.add.tileSprite(0, 0, 0, 0, 'TitleScreen').setOrigin(0, 0);
+        this.title = this.add.tileSprite(0, 0, 0, 0, 'Menu').setOrigin(0, 0);
         cursors = this.input.keyboard.createCursorKeys();  
-    }
-
-    update() {
         // check for UP input
         this.input.keyboard.on('keydown', (event) => {
             //console.log(event);
             switch(event.key) {
                 case '1':
-                    this.scene.start('velocityScene');
+                    //this.sound.play('StartGameSFX');
+                    this.scene.stop('titleScene');
+                    this.scene.start('tutorial1Scene');
                     break;
                 case '2':
-                    this.scene.start('accelerationScene');
+                    //this.sound.play('StartGameSFX');
+                    this.scene.stop('titleScene');
+                    this.scene.start('tutorial2Scene');
                     break;
                 case '3':
-                    this.scene.start('fixedJumpScene');
+                    //this.sound.play('StartGameSFX');
+                    this.scene.stop('titleScene');
+                    this.scene.start('tutorial3Scene');
                     break;
                 case '4':
-                    this.scene.start('variableJumpScene');
+                    //this.sound.play('StartGameSFX');
+                    this.scene.stop('titleScene');
+                    this.scene.start('creditsScene');
                     break;
             }
         });
-        if (Phaser.Input.Keyboard.JustDown(cursors.up)) {
-            // start next scene
-            this.sound.play('StartGameSFX');
-            this.scene.start('playScene');
-        }
+    }
 
-        if (Phaser.Input.Keyboard.JustDown(cursors.down)) {
-            this.sound.play('StartGameSFX');
-            this.scene.stop('titleScene');
-            this.scene.start('creditsScene');
-        }
+    update() {
+        
     }
 }
