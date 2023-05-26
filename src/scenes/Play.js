@@ -138,6 +138,8 @@ class Play extends Phaser.Scene {
             
             // Next phase happens after a delayed time
             this.time.delayedCall(2000, () => { 
+                this.readyStance.setAlpha(0);
+                this.duelStance.setAlpha(1);
                 this.duel = false;
                 this.end = true; 
             });
@@ -203,6 +205,8 @@ class Play extends Phaser.Scene {
         this.combination.push(this.randomKey);
         this.tempCombination = this.combination.slice();
         this.add.text(16, 128 + (32 * this.round), this.randomKey, keyConfig);
+        this.readyStance.setAlpha(1);
+        this.duelStance.setAlpha(0);
 
         console.log(this.combination);
     }
