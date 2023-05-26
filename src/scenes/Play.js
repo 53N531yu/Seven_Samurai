@@ -24,11 +24,14 @@ class Play extends Phaser.Scene {
         this.readyStance = this.physics.add.sprite(800, 500, 'ReadyStance').setAlpha(1);
         this.duelStance = this.physics.add.sprite(800, 500, 'FightStance').setAlpha(0);
 
+        // Display UI
+        this.readyUI = this.physics.add.sprite(800, 450, 'ReadyUI').setAlpha(0);
+        this.duelUI = this.physics.add.sprite(800, 450, 'DuelUI').setAlpha(0);
+
         // set up Phaser-provided cursor key input
         cursors = this.input.keyboard.createCursorKeys();
 
         // Display Score
-
         this.round = 0;
 
         let roundConfig = {
@@ -76,6 +79,7 @@ class Play extends Phaser.Scene {
 
     update() {
         if (this.begin == true) {
+            // fade out the black screen
             this.tweens.add({
                 targets: this.blackScreen,
                 alpha: 0,
@@ -91,17 +95,39 @@ class Play extends Phaser.Scene {
             // next phase
             this.begin = false;
             this.preperation = true;
+            this.readyUI.setAlpha(1);
         }
         else if (this.preperation == true) {
             console.log("Ready");
+            // fade out "Ready" UI
+            this.tweens.add({
+                targets: this.readyUI,
+                alpha: 0,
+                ease: 'Linear',
+                duration: 1000,
+                onComplete: () => {
+                    this.readyUI.alpha = 0;
+                }
+            });
             this.time.delayedCall(2000, () => { 
                 this.preperation = false;
                 this.duel = true; 
+                this.duelUI.setAlpha(1);
             });
         }
         else if (this.duel == true) {
             console.log("Duel!");
-
+            // this.readyUI.setAlpha(0);
+            // fade out "Duel!" UI
+            this.tweens.add({
+                targets: this.duelUI,
+                alpha: 0.5,
+                ease: 'Linear',
+                duration: 1000,
+                onComplete: () => {
+                    this.duelUI.alpha = 0.5;
+                }
+            });
             // Check
             if (!this.defeat && !this.victory) {
                 if (!this.keyPressed) {
@@ -117,7 +143,13 @@ class Play extends Phaser.Scene {
             });
         }
         else if (this.end == true) {
-            console.log("victory");
+            if (this.tempCombination.length > 0) {
+                console.log("defeat!");
+            } else {
+                console.log("victory");
+            }
+            
+            this.duelUI.setAlpha(0);
             this.tweens.add({
                 targets: this.blackScreen,
                 alpha: 1,
