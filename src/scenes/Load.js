@@ -23,6 +23,7 @@ class Load extends Phaser.Scene {
         this.load.image('FightStance', 'img/FightStance.png');
 
         // Backgrounds :
+        this.load.image('BlackScreen', 'img/BlackScreen.png');
         this.load.image('DuelArena', 'img/DuelArena.png');
 
         // Screens :
