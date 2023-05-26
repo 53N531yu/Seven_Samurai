@@ -5,17 +5,20 @@ class Play extends Phaser.Scene {
 
     create() {
 
-        // Background Music
-        // this.bgm = this.sound.add('BackMusic', { 
-        //     mute: false,
-        //     volume: 0.5,
-        //     rate: 1,
-        //     loop: true 
-        // });
-        // this.bgm.play();
+        // Background sound
+        this.bgm = this.sound.add('BackgroundSFX', { 
+            mute: false,
+            volume: 2,
+            rate: 1,
+            loop: true 
+        });
+        this.bgm.play();
 
         //SFX
-        //this.jumppieceSFX = this.sound.add('JumpPieceSFX', {volume: 2, loop : false});
+        this.ReadySFX = this.sound.add('ReadySFX', {volume: 0.5, loop : false});
+        this.DuelCrySFX1 = this.sound.add('DuelCrySFX1', {volume: 0.5, loop : false});
+        this.DuelCrySFX2 = this.sound.add('DuelCrySFX2', {volume: 0.5, loop : false});
+        this.DuelCrySFX3 = this.sound.add('DuelCrySFX3', {volume: 0.5, loop : false});
         
         // add tile sprite
         this.background = this.add.tileSprite(0, 0, 0, 0, 'DuelArena').setOrigin(0, 0);
@@ -27,6 +30,9 @@ class Play extends Phaser.Scene {
         // Display UI
         this.readyUI = this.physics.add.sprite(800, 450, 'ReadyUI').setAlpha(0);
         this.duelUI = this.physics.add.sprite(800, 450, 'DuelUI').setAlpha(0);
+        this.VictoryScreen = this.physics.add.sprite(800, 450, 'VictoryScreen').setAlpha(0);
+        this.DefeatScreen = this.physics.add.sprite(800, 450, 'DefeatScreen').setAlpha(0);
+        this.RoundWon = this.physics.add.sprite(800, 450, 'RoundWon').setAlpha(0);        
 
         // set up Phaser-provided cursor key input
         cursors = this.input.keyboard.createCursorKeys();
@@ -89,6 +95,15 @@ class Play extends Phaser.Scene {
                     this.blackScreen.alpha = 0;
                 }
             });
+            this.tweens.add({
+                targets: this.RoundWon,
+                alpha: 0,
+                ease: 'Linear',
+                duration: 1000,
+                onComplete: () => {
+                    this.RoundWon.alpha = 0;
+                }
+            });
             // New Round, new keys
             this.PrepareRound();
 
@@ -98,7 +113,7 @@ class Play extends Phaser.Scene {
             this.readyUI.setAlpha(1);
         }
         else if (this.preperation == true) {
-            console.log("Ready");
+            this.ReadySFX.play();
             // fade out "Ready" UI
             this.tweens.add({
                 targets: this.readyUI,
@@ -116,8 +131,7 @@ class Play extends Phaser.Scene {
             });
         }
         else if (this.duel == true) {
-            console.log("Duel!");
-            // this.readyUI.setAlpha(0);
+            this.RandomCry();
             // fade out "Duel!" UI
             this.tweens.add({
                 targets: this.duelUI,
@@ -134,49 +148,66 @@ class Play extends Phaser.Scene {
                     this.CheckKeyPress();
                 }
                 this.ResetKeyPress();
-            }
-            
+            } 
             // Next phase happens after a delayed time
             this.time.delayedCall(2000, () => { 
                 this.readyStance.setAlpha(0);
                 this.duelStance.setAlpha(1);
+                if (this.tempCombination.length > 0) {
+                    this.defeat = true;
+                    console.log("defeat");
+                } 
                 this.duel = false;
                 this.end = true; 
-            });
+            }); 
         }
         else if (this.end == true) {
-            if (this.tempCombination.length > 0) {
-                console.log("defeat!");
-            } else {
-                console.log("victory");
-            }
-            
-            this.duelUI.setAlpha(0);
-            this.tweens.add({
-                targets: this.blackScreen,
-                alpha: 1,
-                ease: 'Linear',
-                duration: 1000,
-                onComplete: () => {
-                    this.blackScreen.alpha = 1;
-                }
-            });
 
-            this.time.delayedCall(2000, () => { 
-                this.end = false;
-                
-            });
+            if (this.defeat == true) {
+                console.log("defeat");
+                this.bgm.stop();
+                this.scene.stop('playScene');
+                this.scene.start('duelDefeatScene');
+            } else {
+                this.duelUI.setAlpha(0);
+                this.tweens.add({
+                    targets: this.blackScreen,
+                    alpha: 1,
+                    ease: 'Linear',
+                    duration: 1000,
+                    onComplete: () => {
+                        this.blackScreen.alpha = 1;
+                    }
+                });
+                this.RoundWon.setAlpha(1);
+                this.time.delayedCall(4000, () => { 
+                    this.end = false; 
+                });
+                }
         }
         else { 
             if (this.round < 8) {
                 this.begin = true; 
                 this.Prepared = false;
+            } else if (this.round >= 8) {
+                this.bgm.stop();
+                this.scene.stop('playScene');
+                this.scene.start('duelVictoryScene');
             }
             
         }
     }
 
-    changeDifficulty() {      
+    RandomCry() {   
+        const randomCry = ['DuelCrySFX1', 'DuelCrySFX2', 'DuelCrySFX3'];
+        Phaser.Utils.Array.Shuffle(randomCry);
+        
+        this.soundKey = randomCry[0];
+        
+        this.sound = this[this.soundKey];
+        if (!this.sound.isPlaying) {
+            this.sound.play();
+        }
     }
     
     // new round, new button combination
@@ -260,10 +291,24 @@ class Play extends Phaser.Scene {
           this.keyPressed = false;
     }
 
-    // Victory Condition
+    // Victory/Defeat Condition
 
-    Victory() {
-
+    GameOver() {
+        this.input.keyboard.on('keydown', (event) => {
+            //console.log(event);
+            switch(event.key) {
+                case '1':
+                    // this.sound.play('StartGameSFX');
+                    this.scene.stop('playScene');
+                    this.scene.start('titleScene');
+                    break;
+                case '2':
+                    // this.sound.play('StartGameSFX');
+                    this.scene.stop('playScene');
+                    this.scene.start('playScene');
+                    break;
+            }
+        });
     }
 
     // Defeat Condition

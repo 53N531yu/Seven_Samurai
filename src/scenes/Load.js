@@ -32,14 +32,21 @@ class Load extends Phaser.Scene {
         this.load.image('DuelTutorial', 'img/DuelInstructions.png');
         this.load.image('Scene2Tutorial', 'img/Scene2Instructions.png');
         this.load.image('Scene3Tutorial', 'img/Scene3Instructions.png');
+        this.load.image('VictoryScreen', 'img/VictoryScreen.png');
+        this.load.image('DefeatScreen', 'img/DefeatScreen.png');
 
         // UI :
         this.load.image('DuelUI', 'img/DuelUI.png');
         this.load.image('ReadyUI', 'img/ReadyUI.png');
+        this.load.image('RoundWon', 'img/RoundWon.png');
 
         //this.load.spritesheet('walk', 'img/walkAnimation.png', {frameWidth: 64, frameHeight: 64, startFrame: 0, endFrame: 6});
         // load audio assets
-        //this.load.audio('BackMusic', ['audio/NocturneOP27NO2.wav']);
+        this.load.audio('BackgroundSFX', ['audio/BackgroundSFX.wav']);
+        this.load.audio('ReadySFX', ['audio/ReadySFX.wav']);
+        this.load.audio('DuelCrySFX1', ['audio/DuelCrySFX1.wav']);
+        this.load.audio('DuelCrySFX2', ['audio/DuelCrySFX2.wav']);
+        this.load.audio('DuelCrySFX3', ['audio/DuelCrySFX3.wav']);
     }
 
     create() {

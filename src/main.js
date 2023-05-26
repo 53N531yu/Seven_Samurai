@@ -38,7 +38,7 @@ let config = {
             }
         }
     },
-    scene: [ Load, Tutorial1, Tutorial2, Tutorial3, Play, Burning, Bandits, GameOver, Credits, Title ]
+    scene: [ Load, Tutorial1, Tutorial2, Tutorial3, Play, DuelDefeat, DuelVictory, Burning, Bandits, GameOver, Credits, Title ]
 }
 
 // uncomment the following line if you need to purge local storage data
