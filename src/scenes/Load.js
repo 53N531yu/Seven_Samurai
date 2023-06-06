@@ -45,7 +45,9 @@ class Load extends Phaser.Scene {
         this.load.image('DuelUI', 'img/DuelUI.png');
         this.load.image('ReadyUI', 'img/ReadyUI.png');
         this.load.image('RoundWon', 'img/RoundWon.png');
-
+        this.load.image('MissedUI', 'img/MissedUI.png');
+        this.load.image('WomanKilledUI', 'img/WomanKilledUI.png');
+        
         //this.load.spritesheet('walk', 'img/walkAnimation.png', {frameWidth: 64, frameHeight: 64, startFrame: 0, endFrame: 6});
         // load audio assets
         this.load.audio('BackgroundSFX', ['audio/BackgroundSFX.wav']);
