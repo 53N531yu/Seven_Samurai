@@ -21,10 +21,16 @@ class Load extends Phaser.Scene {
         // Sprites :
         this.load.image('ReadyStance', 'img/ReadyStance.png');
         this.load.image('FightStance', 'img/FightStance.png');
+        this.load.image('ReadyStance2', 'img/ReadyStance2.png');
+        this.load.image('Attack', 'img/Attack.png');
+        this.load.image('Bandit1', 'img/Bandit1.png');
+        this.load.image('Bandit2', 'img/Bandit2.png');
+        this.load.image('Woman', 'img/Woman.png');
 
         // Backgrounds :
         this.load.image('BlackScreen', 'img/BlackScreen.png');
         this.load.image('DuelArena', 'img/DuelArena.png');
+        this.load.image('TheBurningFortress', 'img/TheBurningFortress.png');
 
         // Screens :
         this.load.image('Menu', 'img/MainMenu.png');
