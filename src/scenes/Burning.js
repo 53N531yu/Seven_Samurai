@@ -8,7 +8,7 @@ class Burning extends Phaser.Scene {
         // add tile sprite
         this.background = this.add.tileSprite(0, 0, 0, 0, 'TheBurningFortress').setOrigin(0, 0).setDepth(0);
 
-        // set up duelers
+        // set up player
         this.readyStance = this.physics.add.sprite(900, 450, 'ReadyStance2').setAlpha(1).setDepth(2);
         this.attack = this.physics.add.sprite(900, 450, 'Attack').setAlpha(0).setDepth(2);
 

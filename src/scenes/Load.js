@@ -56,6 +56,7 @@ class Load extends Phaser.Scene {
         //this.load.spritesheet('walk', 'img/walkAnimation.png', {frameWidth: 64, frameHeight: 64, startFrame: 0, endFrame: 6});
         // load audio assets
         this.load.audio('BackgroundSFX', ['audio/BackgroundSFX.wav']);
+        this.load.audio('Scene3BackgroundSFX', ['audio/Scene3BackgroundSFX.wav']);
         this.load.audio('ReadySFX', ['audio/ReadySFX.wav']);
         this.load.audio('DuelCrySFX1', ['audio/DuelCrySFX1.wav']);
         this.load.audio('DuelCrySFX2', ['audio/DuelCrySFX2.wav']);
