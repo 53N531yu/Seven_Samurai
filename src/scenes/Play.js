@@ -5,7 +5,7 @@ class Play extends Phaser.Scene {
 
     create() {
 
-        // add tile sprite
+        // add background sprite
         this.background = this.add.tileSprite(0, 0, 0, 0, 'DuelArena').setOrigin(0, 0);
 
         // set up duelers
@@ -104,7 +104,7 @@ class Play extends Phaser.Scene {
             this.begin = false;
             this.preperation = true;
         }
-        // Prepearation phase begins
+        // Preparation phase begins
         else if (this.preperation == true) {
             this.ReadySFX.play();
             // fade out "Ready" UI
@@ -130,7 +130,6 @@ class Play extends Phaser.Scene {
             {
                 this.RandomCry();
                 this.hasCried = true;
-                console.log("yelling");
             }
             // fade out "Duel!" UI
             this.tweens.add({
@@ -157,16 +156,16 @@ class Play extends Phaser.Scene {
                 this.duelStance.setAlpha(1);
                 if (this.tempCombination.length > 0) {
                     this.defeat = true;
-                    console.log("defeat");
                 } 
                 this.duel = false;
                 this.end = true; 
             }); 
         }
+
+        // End phase begins
         else if (this.end == true) {
             // Checks to see if the player lost the round. If so, the game ends
             if (this.defeat == true) {
-                console.log("defeat");
                 this.bgm.stop(); // Stop background music
                 this.scene.stop('playScene');
                 this.scene.start('duelDefeatScene'); // Load Defeat screen
@@ -179,18 +178,15 @@ class Play extends Phaser.Scene {
                     duration: 1000,
                     onComplete: () => {
                         this.blackScreen.alpha = 1;
-                        console.log("tween complete");
                     }
                 });
                 if (!this.roundFinished)
                 {
                     this.time.delayedCall(1000, () => { 
                         this.RoundWon.setAlpha(1);
-                        console.log("first delay complete");
                         this.time.delayedCall(2000, () => { 
                             this.RoundWon.setAlpha(0);
                             this.end = false; 
-                            console.log("second delay complete");
                         });
                     });
                     this.roundFinished = true;
