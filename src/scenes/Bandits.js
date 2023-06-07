@@ -85,9 +85,16 @@ class Bandits extends Phaser.Scene {
         this.leftPressed = true;
         this.rightPressed = true;
         this.keyPressed = false;
+
+        // Booleans to prevent things from happening 60 times a second
+        this.restarted = false;
     }
 
     update() {
+        if (!this.restarted) {
+            this.GameOver();
+            this.restarted = true;
+        }
         // The Begin phase begins
         // if (this.begin == true) {
         //     // fade out the black screen
@@ -337,13 +344,15 @@ class Bandits extends Phaser.Scene {
             switch(event.key) {
                 case '1':
                     // this.sound.play('StartGameSFX');
-                    this.scene.stop('playScene');
+                    this.bgm.stop();
+                    this.scene.stop('banditScene');
                     this.scene.start('titleScene');
                     break;
                 case '2':
                     // this.sound.play('StartGameSFX');
-                    this.scene.stop('playScene');
-                    this.scene.start('playScene');
+                    this.bgm.stop();
+                    this.scene.stop('banditScene');
+                    this.scene.start('banditScene');
                     break;
             }
         });

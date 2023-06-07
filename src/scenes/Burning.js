@@ -12,9 +12,6 @@ class Burning extends Phaser.Scene {
         this.readyStance = this.physics.add.sprite(900, 450, 'ReadyStance2').setAlpha(1).setDepth(2);
         this.attack = this.physics.add.sprite(900, 450, 'Attack').setAlpha(0).setDepth(2);
 
-        //Black screen (For end/ beginning of round)
-        // this.blackScreen = this.physics.add.sprite(800, 450, 'BlackScreen').setAlpha(1);
-
         // set up Phaser-provided cursor key input
         cursors = this.input.keyboard.createCursorKeys();
 
@@ -44,8 +41,8 @@ class Burning extends Phaser.Scene {
         this.missedUI = this.physics.add.sprite(800, 450, 'MissedUI').setAlpha(0);
 
         // Background sound
-        // this.bgm = this.sound.add('BackgroundSFX', {volume: 2, loop : true});
-        // this.bgm.play();
+        this.bgm = this.sound.add('Scene3BackgroundSFX', {volume: 2, loop : true});
+        this.bgm.play();
 
         // SFX
         // this.DuelCrySFX3 = this.sound.add('DuelCrySFX3', {volume: 0.5, loop : false});
@@ -67,11 +64,15 @@ class Burning extends Phaser.Scene {
         this.victimDead = false;
         this.victimDestroyed = false;
         this.banditEscaped = false;
+        this.restarted = false;
     }
 
     update() {
         this.Slice();
-        
+        if (!this.restarted) {
+            this.GameOver();
+            this.restarted = true;
+        }
         // The Begin phase begins
         if (this.begin == true) {
             this.Slice();
@@ -256,13 +257,15 @@ class Burning extends Phaser.Scene {
             switch(event.key) {
                 case '1':
                     // this.sound.play('StartGameSFX');
-                    this.scene.stop('playScene');
+                    this.bgm.stop();
+                    this.scene.stop('burningScene');
                     this.scene.start('titleScene');
                     break;
                 case '2':
                     // this.sound.play('StartGameSFX');
-                    this.scene.stop('playScene');
-                    this.scene.start('playScene');
+                    this.bgm.stop();
+                    this.scene.stop('burningScene');
+                    this.scene.start('burningScene');
                     break;
             }
         });
