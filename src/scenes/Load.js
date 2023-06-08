@@ -52,6 +52,11 @@ class Load extends Phaser.Scene {
         this.load.image('RoundWon', 'img/RoundWon.png');
         this.load.image('MissedUI', 'img/MissedUI.png');
         this.load.image('WomanKilledUI', 'img/WomanKilledUI.png');
+
+        // Animation Spritesheets
+        this.load.spritesheet('walk', 'img/Bandit1Animation.png', {frameWidth: 195, frameHeight: 361, startFrame: 0, endFrame: 2});
+        this.load.spritesheet('walk', 'img/Bandit2Animation.png', {frameWidth: 195, frameHeight: 361, startFrame: 0, endFrame: 2});
+        this.load.spritesheet('walk', 'img/WomanAnimation.png', {frameWidth: 195, frameHeight: 361, startFrame: 0, endFrame: 2});
         
         //this.load.spritesheet('walk', 'img/walkAnimation.png', {frameWidth: 64, frameHeight: 64, startFrame: 0, endFrame: 6});
         // load audio assets

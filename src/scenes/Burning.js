@@ -177,6 +177,7 @@ class Burning extends Phaser.Scene {
                 this.missedUI.setAlpha(1);
                 this.isDisplayed = true;
             }
+            console.log("escaped");
             this.banditEscaped = true;
         } else if (!this.upPressed && this.isBandit && this.victim.x < 950 && !this.banditEscaped) {
             this.banditsKilled ++;
@@ -198,15 +199,15 @@ class Burning extends Phaser.Scene {
     RandomReveal() { // A bandit or a woman is randomly generated
         this.victimSpawn = Math.floor(Math.random() * 3);
         if (this.victimSpawn === 0) {
-            this.victim = this.physics.add.sprite(800, 450, 'Bandit1').setDepth(1);
+            this.victim = this.physics.add.sprite(750, 450, 'Bandit1').setDepth(1);
             this.isBandit = true;
         }
         else if (this.victimSpawn === 1) {
-            this.victim = this.physics.add.sprite(800, 450, 'Bandit2').setDepth(1);
+            this.victim = this.physics.add.sprite(750, 450, 'Bandit2').setDepth(1);
             this.isBandit = true;
         }
         else {
-            this.victim = this.physics.add.sprite(800, 450, 'Woman').setDepth(1);
+            this.victim = this.physics.add.sprite(750, 450, 'Woman').setDepth(1);
             this.isWoman = true;
         }
         this.victim.body.immovable = true;
