@@ -41,12 +41,12 @@ class Burning extends Phaser.Scene {
         this.missedUI = this.physics.add.sprite(800, 450, 'MissedUI').setAlpha(0);
 
         // Background sound
-        this.bgm = this.sound.add('Scene3BackgroundSFX', {volume: 2, loop : true});
+        this.bgm = this.sound.add('Scene3BackgroundSFX', {volume: 1, loop : true});
         this.bgm.play();
 
         // SFX
-        // this.DuelCrySFX3 = this.sound.add('DuelCrySFX3', {volume: 0.5, loop : false});
-        
+        this.WomanScreamingSFX = this.sound.add('WomanScreamingSFX', {volume: 1, loop : false});
+        this.BanditsScreamingSFX = this.sound.add('BanditsScreamingSFX', {volume: 1, loop : false});
 
         // Phases
         this.begin = true;
@@ -65,6 +65,7 @@ class Burning extends Phaser.Scene {
         this.victimDestroyed = false;
         this.banditEscaped = false;
         this.restarted = false;
+        this.isDisplayed = false;
     }
 
     update() {
@@ -84,7 +85,12 @@ class Burning extends Phaser.Scene {
             this.victimDead = false;
             this.victimDestroyed = false;
             this.banditEscaped = false;
+            this.isDisplayed = false;
             // next phase
+            this.time.delayedCall(1000, () => {
+                this.womanKilledUI.setAlpha(0);
+                this.missedUI.setAlpha(0);
+            });
             this.time.delayedCall(2000, () => {
                 this.begin = false;
                 this.reveal = true;
@@ -104,7 +110,7 @@ class Burning extends Phaser.Scene {
                 this.killChecked = true;
             }
             // Begin the next phase after 2 seconds.
-            this.time.delayedCall(500, () => { 
+            this.time.delayedCall(1000, () => { 
                 this.killChecked = false;
                 this.reveal = false;
                 this.flee = true; 
@@ -136,12 +142,12 @@ class Burning extends Phaser.Scene {
                 this.begin = true; 
                 this.reveal = false;
             } else if (this.banditsKilled >= 10) { // If the player wins all 7 rounds, they win the game
-                // this.bgm.stop();
+                this.bgm.stop();
                 this.scene.stop('playScene');
                 this.scene.start('duelVictoryScene');
                 console.log("victory");
             } else if (this.misses >= 3) {
-                // this.bgm.stop();
+                this.bgm.stop();
                 this.scene.stop('playScene');
                 this.scene.start('duelDefeatScene');
                 console.log("defeat");
@@ -157,12 +163,20 @@ class Burning extends Phaser.Scene {
             this.reveal = false;
             this.flee = false;
             this.victim.destroy();
+            if (!this.isDisplayed) {
+                this.womanKilledUI.setAlpha(1);
+                this.WomanScreamingSFX.play();
+                this.isDisplayed = true;
+            }
             this.victimDestroyed = true;
             this.victimDead = true;
         } else if (this.isBandit && this.victim.x > 950 && !this.banditEscaped) {
             this.misses ++;
             this.missesLeft.text = "Misses : " + this.misses + " / 3";
-            console.log("escaped");
+            if (!this.isDisplayed) {
+                this.missedUI.setAlpha(1);
+                this.isDisplayed = true;
+            }
             this.banditEscaped = true;
         } else if (!this.upPressed && this.isBandit && this.victim.x < 950 && !this.banditEscaped) {
             this.banditsKilled ++;
@@ -170,6 +184,10 @@ class Burning extends Phaser.Scene {
             this.begin = true;
             this.reveal = false;
             this.flee = false;
+            if (!this.isDisplayed) {
+                this.BanditsScreamingSFX.play();
+                this.isDisplayed = true;
+            }
             this.victim.destroy();
             this.banditEscaped = true;
             this.victimDestroyed = true;

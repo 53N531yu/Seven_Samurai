@@ -61,6 +61,8 @@ class Load extends Phaser.Scene {
         this.load.audio('DuelCrySFX1', ['audio/DuelCrySFX1.wav']);
         this.load.audio('DuelCrySFX2', ['audio/DuelCrySFX2.wav']);
         this.load.audio('DuelCrySFX3', ['audio/DuelCrySFX3.wav']);
+        this.load.audio('BanditsScreamingSFX', ['audio/BanditsScreamingSFX.wav']);
+        this.load.audio('WomanScreamingSFX', ['audio/WomanScreamingSFX.wav']);
     }
 
     create() {

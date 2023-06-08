@@ -78,10 +78,15 @@ class Play extends Phaser.Scene {
         this.keyPressed = false;
         this.hasCried = false;
         this.roundFinished = false;
+        this.restarted = false;
     }
 
     update() {
         // The Begin phase begins
+        if (!this.restarted) {
+            this.GameOver();
+            this.restarted = true;
+        }
         if (this.begin == true) {
             // fade out the black screen
             this.hasCried = false;
@@ -267,6 +272,7 @@ class Play extends Phaser.Scene {
         this.add.text(16, 128 + (32 * this.round), this.randomKey, keyConfig);
         this.readyStance.setAlpha(1);
         this.duelStance.setAlpha(0);
+        this.restarted = false;
 
         console.log(this.combination);
     }
@@ -332,11 +338,13 @@ class Play extends Phaser.Scene {
                     // this.sound.play('StartGameSFX');
                     this.scene.stop('playScene');
                     this.scene.start('titleScene');
+                    this.bgm.stop();
                     break;
                 case '2':
                     // this.sound.play('StartGameSFX');
                     this.scene.stop('playScene');
                     this.scene.start('playScene');
+                    this.bgm.stop();
                     break;
             }
         });
