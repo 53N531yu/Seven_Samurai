@@ -43,7 +43,6 @@ class Play extends Phaser.Scene {
         this.RoundWon = this.physics.add.sprite(800, 450, 'RoundWon').setAlpha(0);
         this.readyUI = this.physics.add.sprite(800, 450, 'ReadyUI').setAlpha(0);
         this.duelUI = this.physics.add.sprite(800, 450, 'DuelUI').setAlpha(0);
-        
 
         // Background sound
         this.bgm = this.sound.add('BackgroundSFX', {volume: 2, loop : true});
@@ -199,6 +198,8 @@ class Play extends Phaser.Scene {
                 
                 }
         }
+
+        // Check for victory or defeat
         else { 
             // Ensures that that the game doesn't go pass 7 rounds.
             if (this.round < 7) {

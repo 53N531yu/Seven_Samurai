@@ -47,6 +47,37 @@ class Burning extends Phaser.Scene {
         // SFX
         this.WomanScreamingSFX = this.sound.add('WomanScreamingSFX', {volume: 1, loop : false});
         this.BanditsScreamingSFX = this.sound.add('BanditsScreamingSFX', {volume: 1, loop : false});
+        
+        // Set up animation for sprites
+        this.anims.create({
+            key: 'bandit1',
+            frames: this.anims.generateFrameNumbers('bandit1', { 
+                start: 0, 
+                end: 1, 
+                first: 0
+            }),
+            frameRate: 5
+        });
+
+        this.anims.create({
+            key: 'bandit2',
+            frames: this.anims.generateFrameNumbers('bandit2', { 
+                start: 0, 
+                end: 1, 
+                first: 0
+            }),
+            frameRate: 5
+        });
+
+        this.anims.create({
+            key: 'womanAnim',
+            frames: this.anims.generateFrameNumbers('womanAnim', { 
+                start: 0, 
+                end: 1, 
+                first: 0
+            }),
+            frameRate: 5
+        });
 
         // Phases
         this.begin = true;
@@ -66,6 +97,9 @@ class Burning extends Phaser.Scene {
         this.banditEscaped = false;
         this.restarted = false;
         this.isDisplayed = false;
+        this.bandit1Revealed = false;
+        this.bandit2Revealed = false;
+        this.womanRevealed = false;
     }
 
     update() {
@@ -86,6 +120,9 @@ class Burning extends Phaser.Scene {
             this.victimDestroyed = false;
             this.banditEscaped = false;
             this.isDisplayed = false;
+            this.bandit1Revealed = false;
+            this.bandit2Revealed = false;
+            this.womanRevealed = false;
             // next phase
             this.time.delayedCall(1000, () => {
                 this.womanKilledUI.setAlpha(0);
@@ -124,6 +161,13 @@ class Burning extends Phaser.Scene {
                 this.flee = false;
             } else {
                 this.victim.setVelocityX(250);
+                if (this.bandit1Revealed) {
+                    this.victim.anims.play('bandit1', true);
+                } else if (this.bandit2Revealed) {
+                    this.victim.anims.play('bandit2', true);
+                } else if (this.womanRevealed) {
+                    this.victim.anims.play('womanAnim', true);
+                }
                 if (!this.victimDead) {
                     this.KillCheck();
                     this.victimDead = true;
@@ -201,14 +245,17 @@ class Burning extends Phaser.Scene {
         if (this.victimSpawn === 0) {
             this.victim = this.physics.add.sprite(750, 450, 'Bandit1').setDepth(1);
             this.isBandit = true;
+            this.bandit1Revealed = true;
         }
         else if (this.victimSpawn === 1) {
             this.victim = this.physics.add.sprite(750, 450, 'Bandit2').setDepth(1);
             this.isBandit = true;
+            this.bandit2Revealed = true;
         }
         else {
             this.victim = this.physics.add.sprite(750, 450, 'Woman').setDepth(1);
             this.isWoman = true;
+            this.womanRevealed = true;
         }
         this.victim.body.immovable = true;
         //this.victim.body.setAllowGravity(false).setVelocityX(this.difficulty);

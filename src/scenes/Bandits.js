@@ -7,7 +7,7 @@ class Bandits extends Phaser.Scene {
 
         // add background and foreground sprite
         this.background = this.add.tileSprite(0, 0, 0, 0, 'VillageEntrance').setOrigin(0, 0).setDepth(0);
-        this.foreground = this.add.tileSprite(0, 0, 0, 0, 'VEForeground').setOrigin(0, 0).setDepth(2);
+        this.foreground = this.add.tileSprite(0, 0, 0, 0, 'VEForeground').setOrigin(0, 0).setDepth(3);
 
         // set up player
         this.readyStance = this.physics.add.sprite(800, 500, 'ReadyStance3').setAlpha(1).setDepth(1);
@@ -49,9 +49,27 @@ class Bandits extends Phaser.Scene {
             },
             fixedWidth: 350
         }
+
+        let pressConfig = {
+            fontFamily: 'Courier',
+            fontSize: '28px',
+            backgroundColor: '#292929',
+            color: '#ffffff',
+            align: 'left',
+            padding: {
+                top: 5,
+                bottom: 5,
+                left: 20,
+                right: 20,
+            },
+            fixedWidth: 150
+        }
+
         this.banditsLeftDisplay = this.add.text(16, 64, "Bandits Remaining : " + this.banditsRemaining, banditsConfig).setDepth(5);
 
         this.missesDisplay = this.add.text(16, 128, "Misses : " + this.misses + " / 5", missConfig).setDepth(5);
+        
+        this.pressKey = this.add.text(16, 192, "Press: ", pressConfig).setDepth(5);
 
         // Display UI
         // this.RoundWon = this.physics.add.sprite(800, 450, 'RoundWon').setAlpha(0);
@@ -60,19 +78,15 @@ class Bandits extends Phaser.Scene {
         
 
         // Background sound
-        this.bgm = this.sound.add('Scene3BackgroundSFX', {volume: 2, loop : true});
+        this.bgm = this.sound.add('Scene3BackgroundSFX', {volume: 1, loop : true});
         this.bgm.play();
 
         //SFX
         // this.ReadySFX = this.sound.add('ReadySFX', {volume: 0.5, loop : false});
-        // this.DuelCrySFX1 = this.sound.add('DuelCrySFX1', {volume: 0.5, loop : false});
-        // this.DuelCrySFX2 = this.sound.add('DuelCrySFX2', {volume: 0.5, loop : false});
-        // this.DuelCrySFX3 = this.sound.add('DuelCrySFX3', {volume: 0.5, loop : false});
-        
 
         // Phases
-        this.begin = true;
-        this.end = false;
+        this.prepare = true;
+        this.fight = false;
 
         // Key combination during duel
         this.keysToPress = 4;
@@ -88,6 +102,7 @@ class Bandits extends Phaser.Scene {
 
         // Booleans to prevent things from happening 60 times a second
         this.restarted = false;
+        this.displayedKeys = false;
     }
 
     update() {
@@ -95,119 +110,37 @@ class Bandits extends Phaser.Scene {
             this.GameOver();
             this.restarted = true;
         }
-        // The Begin phase begins
-        // if (this.begin == true) {
-        //     // fade out the black screen
-        //     this.hasCried = false;
-        //     this.roundFinished = false;
-        //     this.tweens.add({
-        //         targets: this.blackScreen,
-        //         alpha: 0,
-        //         ease: 'Linear',
-        //         duration: 1000,
-        //         onComplete: () => {
-        //             this.blackScreen.alpha = 0;
-        //         }
-        //     });
-        //     this.RoundWon.setAlpha(0);
-        //     this.readyUI.setAlpha(1);
-        //     // New Round, new keys are displayed on the screen
-        //     this.PrepareRound();
 
-        //     // next phase
-        //     this.begin = false;
-        //     this.preperation = true;
-        // }
-        // // Preparation phase begins
-        // else if (this.preperation == true) {
-        //     this.ReadySFX.play();
-        //     // fade out "Ready" UI
-        //     this.tweens.add({
-        //         targets: this.readyUI,
-        //         alpha: 0,
-        //         ease: 'Linear',
-        //         duration: 1000,
-        //         onComplete: () => {
-        //             this.readyUI.alpha = 0;
-        //         }
-        //     });
-        //     // Begin the next phase after 2 seconds.
-        //     this.time.delayedCall(2000, () => { 
-        //         this.preperation = false;
-        //         this.duel = true; 
-        //         this.duelUI.setAlpha(1);
-        //     });
-        // }
-        // // Duel phase begins
-        // else if (this.duel == true) {
-        //     if (!this.hasCried)
-        //     {
-        //         this.RandomCry();
-        //         this.hasCried = true;
-        //     }
-        //     // fade out "Duel!" UI
-        //     this.tweens.add({
-        //         targets: this.duelUI,
-        //         alpha: 0.5,
-        //         ease: 'Linear',
-        //         duration: 1000,
-        //         onComplete: () => {
-        //             this.duelUI.alpha = 0.5;
-        //         }
-        //     });
-        //     // Checks if the player has already lost or won the round. If so, prevent any action.
-        //     if (!this.defeat && !this.victory) {
-        //         if (!this.keyPressed) {
-        //             // Checks if the correct keys are being pressed.
-        //             this.CheckKeyPress();
-        //         }
-        //         // Ensures that holding down a key doesn't input it multiple times.
-        //         this.ResetKeyPress();
-        //     } 
-        //     // Next phase happens after a delayed time
-        //     this.time.delayedCall(2000, () => { 
-        //         this.readyStance.setAlpha(0);
-        //         this.duelStance.setAlpha(1);
-        //         if (this.tempCombination.length > 0) {
-        //             this.defeat = true;
-        //         } 
-        //         this.duel = false;
-        //         this.end = true; 
-        //     }); 
-        // }
+        // The prepare phase begins
+        if (this.prepare == true) {
+            this.combination = [];
+            this.tempCombination = [];
 
-        // // End phase begins
-        // else if (this.end == true) {
-        //     // Checks to see if the player lost the round. If so, the game ends
-        //     if (this.defeat == true) {
-        //         this.bgm.stop(); // Stop background music
-        //         this.scene.stop('playScene');
-        //         this.scene.start('duelDefeatScene'); // Load Defeat screen
-        //     } else {
-        //         this.duelUI.setAlpha(0);
-        //         this.tweens.add({
-        //             targets: this.blackScreen,
-        //             alpha: 1,
-        //             ease: 'Linear',
-        //             duration: 1000,
-        //             onComplete: () => {
-        //                 this.blackScreen.alpha = 1;
-        //             }
-        //         });
-        //         if (!this.roundFinished)
-        //         {
-        //             this.time.delayedCall(1000, () => { 
-        //                 this.RoundWon.setAlpha(1);
-        //                 this.time.delayedCall(2000, () => { 
-        //                     this.RoundWon.setAlpha(0);
-        //                     this.end = false; 
-        //                 });
-        //             });
-        //             this.roundFinished = true;
-        //         }
-                
-        //         }
-        // }
+            this.displayedKeys = false;
+            
+            // next phase
+            this.time.delayedCall(1500, () => {
+                this.prepare = false;
+                this.fight = true;
+            });
+        }
+
+        // fight phase begins
+        else if (this.fight == true) {
+            // New Round, new keys are displayed on the screen
+            if (!this.displayedKeys) {
+                this.displayKeys();
+                this.spawnBandit();
+                this.displayedKeys = true;
+            }
+
+            if (this.bandit.x < 0) {
+                this.fight = false;
+                this.prepare = true;
+            }
+        }
+
+        // Check for victory or defeat
         // else { 
         //     // Ensures that that the game doesn't go pass 7 rounds.
         //     if (this.round < 7) {
@@ -254,8 +187,13 @@ class Bandits extends Phaser.Scene {
         return array;
     }
 
-    // new round, new button combination displayed on the screen
-    PrepareRound() {
+    // Spawn mounted bandit
+    spawnBandit() {
+        this.bandit = this.physics.add.sprite(1000, 500, 'HorsebackBandit').setAlpha(1).setDepth(2).setVelocityX(-200).setVelocityY(50);
+    }
+
+    // new bandit, new button combination displayed on the screen
+    displayKeys() {
         let keyConfig = {
             fontFamily: 'Courier',
             fontSize: '28px',
@@ -270,17 +208,16 @@ class Bandits extends Phaser.Scene {
             },
             fixedWidth: 150
         }
-        this.round ++;
-        this.roundLeft.text = "Round " + this.round;
-        this.victory = false;
+
         this.currentKey = "";
-        this.randomKeyIndex =  Math.floor((Math.random() * this.keysToPush.length));
-        this.randomKey = this.keysToPush[this.randomKeyIndex];
-        this.combination.push(this.randomKey);
-        this.tempCombination = this.combination.slice();
-        this.add.text(16, 128 + (32 * this.round), this.randomKey, keyConfig);
-        this.readyStance.setAlpha(1);
-        this.duelStance.setAlpha(0);
+
+        for (let i = 1; i < 5; i++) { 
+            this.randomKeyIndex =  Math.floor((Math.random() * this.keysToPush.length));
+            this.randomKey = this.keysToPush[this.randomKeyIndex];
+            this.combination.push(this.randomKey);
+            this.tempCombination = this.combination.slice();
+            this.add.text(16, 192 + (32 * i), this.randomKey, keyConfig).setDepth(5);
+        }
 
         console.log(this.combination);
     }
