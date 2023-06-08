@@ -52,6 +52,8 @@ class Load extends Phaser.Scene {
         this.load.image('RoundWon', 'img/RoundWon.png');
         this.load.image('MissedUI', 'img/MissedUI.png');
         this.load.image('WomanKilledUI', 'img/WomanKilledUI.png');
+        this.load.image('AttackUI', 'img/AttackUI.png');
+        this.load.image('PassUI', 'img/PassUI.png');
 
         // Animation Spritesheets
         this.load.spritesheet('bandit1', 'img/Bandit1Animation.png', {frameWidth: 195, frameHeight: 361, startFrame: 0, endFrame: 2});

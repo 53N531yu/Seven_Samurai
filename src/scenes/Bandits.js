@@ -134,7 +134,8 @@ class Bandits extends Phaser.Scene {
                 this.displayedKeys = true;
             }
 
-            if (this.bandit.x < 0) {
+            if (this.bandit.x < -500) {
+                this.bandit.destroy();
                 this.fight = false;
                 this.prepare = true;
             }
@@ -189,7 +190,7 @@ class Bandits extends Phaser.Scene {
 
     // Spawn mounted bandit
     spawnBandit() {
-        this.bandit = this.physics.add.sprite(1000, 500, 'HorsebackBandit').setAlpha(1).setDepth(2).setVelocityX(-200).setVelocityY(50);
+        this.bandit = this.physics.add.sprite(1000, 450, 'HorsebackBandit').setAlpha(1).setDepth(2).setVelocityX(-200).setVelocityY(35);
     }
 
     // new bandit, new button combination displayed on the screen
