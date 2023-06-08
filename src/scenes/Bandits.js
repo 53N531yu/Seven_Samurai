@@ -100,6 +100,10 @@ class Bandits extends Phaser.Scene {
         this.rightPressed = true;
         this.keyPressed = false;
 
+        // Attack or Pass
+        this.isAttack = false;
+        this.isPass = false;
+
         // Booleans to prevent things from happening 60 times a second
         this.restarted = false;
         this.displayedKeys = false;
@@ -131,11 +135,13 @@ class Bandits extends Phaser.Scene {
             if (!this.displayedKeys) {
                 this.displayKeys();
                 this.spawnBandit();
+                this.AttackOrPass();
                 this.displayedKeys = true;
             }
 
             if (this.bandit.x < -500) {
                 this.bandit.destroy();
+                this.AttackorPassUI.destroy();
                 this.fight = false;
                 this.prepare = true;
             }
@@ -156,36 +162,16 @@ class Bandits extends Phaser.Scene {
         // }
     }
 
-    RandomCry() { // Randomly plays a screaming sound effect during the duel phase
-        const randomCry = ['DuelCrySFX1', 'DuelCrySFX2', 'DuelCrySFX3'];
-        const shuffledCry = this.shuffle(randomCry);
-      
-        this.soundKey = shuffledCry[0];
-      
-        this.soundToPlay = this[this.soundKey];
-        if (!this.soundToPlay.isPlaying) {
-            this.soundToPlay.play();
+    AttackOrPass() { // A bandit or a woman is randomly generated
+        this.AttackOrPassRandom = Math.floor(Math.random() * 2);
+        if (this.AttackOrPassRandom === 0) {
+            this.AttackorPassUI = this.physics.add.sprite(800, 450, 'AttackUI').setDepth(5);
+            this.isAttack = true;
         }
-    }
-
-    shuffle(array) { // function for shuffling arrays
-        let currentIndex = array.length;
-        let temporaryValue, randomIndex;
-    
-        // While there remain elements to shuffle
-        while (currentIndex !== 0) {
-    
-            // Pick a remaining element
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex -= 1;
-    
-            // Swap it with the current element
-            temporaryValue = array[currentIndex];
-            array[currentIndex] = array[randomIndex];
-            array[randomIndex] = temporaryValue;
+        else {
+            this.AttackorPassUI = this.physics.add.sprite(800, 450, 'PassUI').setDepth(5);
+            this.isPass = true;
         }
-    
-        return array;
     }
 
     // Spawn mounted bandit
