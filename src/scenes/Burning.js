@@ -5,7 +5,7 @@ class Burning extends Phaser.Scene {
 
     create() {
 
-        // add tile sprite
+        // add background sprite
         this.background = this.add.tileSprite(0, 0, 0, 0, 'TheBurningFortress').setOrigin(0, 0).setDepth(0);
 
         // set up player
@@ -15,7 +15,7 @@ class Burning extends Phaser.Scene {
         // set up Phaser-provided cursor key input
         cursors = this.input.keyboard.createCursorKeys();
 
-        // Display Score
+        // Display misses and bandit kills
         this.misses = 0;
         this.banditsKilled = 0;
 
@@ -33,6 +33,7 @@ class Burning extends Phaser.Scene {
             },
             fixedWidth: 320
         }
+
         this.missesLeft = this.add.text(16, 64, "Misses : " + this.misses + " / 3", missConfig);
         this.banditsKilledDisplay = this.add.text(16, 128, "Bandits : " + this.banditsKilled + " / 10", missConfig);
 
@@ -44,11 +45,11 @@ class Burning extends Phaser.Scene {
         this.bgm = this.sound.add('Scene3BackgroundSFX', {volume: 1, loop : true});
         this.bgm.play();
 
-        // SFX
+        // Screaming SFXs
         this.WomanScreamingSFX = this.sound.add('WomanScreamingSFX', {volume: 1, loop : false});
         this.BanditsScreamingSFX = this.sound.add('BanditsScreamingSFX', {volume: 1, loop : false});
         
-        // Set up animation for sprites
+        // Set up animation for bandits and women
         this.anims.create({
             key: 'bandit1',
             frames: this.anims.generateFrameNumbers('bandit1', { 
@@ -103,14 +104,19 @@ class Burning extends Phaser.Scene {
     }
 
     update() {
+        // Player can attack anytime
         this.Slice();
+
+        // Player can restart or quit game anytime
         if (!this.restarted) {
             this.GameOver();
             this.restarted = true;
         }
+
         // The Begin phase begins
         if (this.begin == true) {
             this.Slice();
+            // Reset all boolean
             this.isRevealed = false;
             this.isBandit = false;
             this.isWoman = false;
@@ -123,11 +129,14 @@ class Burning extends Phaser.Scene {
             this.bandit1Revealed = false;
             this.bandit2Revealed = false;
             this.womanRevealed = false;
-            // next phase
+
+            // Remove UI from the screen
             this.time.delayedCall(1000, () => {
                 this.womanKilledUI.setAlpha(0);
                 this.missedUI.setAlpha(0);
             });
+
+            // Go to the next phase
             this.time.delayedCall(2000, () => {
                 this.begin = false;
                 this.reveal = true;
@@ -138,14 +147,15 @@ class Burning extends Phaser.Scene {
         else if (this.reveal == true) {
             this.Slice();
             if (!this.isRevealed) {
-                this.RandomReveal();
+                this.RandomReveal(); // Reveals either a bandit or a woman
                 this.isRevealed = true;
             }
 
             if (!this.killChecked) {
-                this.KillCheck();
+                this.KillCheck(); // Check if kills or misses were made
                 this.killChecked = true;
             }
+
             // Begin the next phase after 2 seconds.
             this.time.delayedCall(1000, () => { 
                 this.killChecked = false;
@@ -157,10 +167,11 @@ class Burning extends Phaser.Scene {
         // Flee phase begins
         else if (this.flee == true) {
             this.Slice();
-            if (this.victimDestroyed) {
+            if (this.victimDestroyed) { // If victim is already dead, just head onto the next phase
                 this.flee = false;
             } else {
-                this.victim.setVelocityX(250);
+                // Make the victim flee from the flee with "animated" running
+                this.victim.setVelocityX(250); 
                 if (this.bandit1Revealed) {
                     this.victim.anims.play('bandit1', true);
                 } else if (this.bandit2Revealed) {
@@ -168,12 +179,13 @@ class Burning extends Phaser.Scene {
                 } else if (this.womanRevealed) {
                     this.victim.anims.play('womanAnim', true);
                 }
+
                 if (!this.victimDead) {
                     this.KillCheck();
                     this.victimDead = true;
                 }
     
-                if (this.victim.x > 1600) {
+                if (this.victim.x > 1600) { // Destroys the bandits or women when they're out of the scene
                     this.victim.destroy();
                     this.flee = false;
                 }
@@ -181,16 +193,16 @@ class Burning extends Phaser.Scene {
             
         }
         else { 
-            // Ensures that that the game doesn't go pass 7 rounds.
+            // Ensures that that the game doesn't go pass 3 misses or 10 bandits killed.
             if (this.misses < 3 && this.banditsKilled < 10) {
                 this.begin = true; 
                 this.reveal = false;
-            } else if (this.banditsKilled >= 10) { // If the player wins all 7 rounds, they win the game
+            } else if (this.banditsKilled >= 10) { // If the player kills 10 bandits, they win the game
                 this.bgm.stop();
                 this.scene.stop('playScene');
                 this.scene.start('duelVictoryScene');
                 console.log("victory");
-            } else if (this.misses >= 3) {
+            } else if (this.misses >= 3) { // If the player has 3 misses, they lose the game
                 this.bgm.stop();
                 this.scene.stop('playScene');
                 this.scene.start('duelDefeatScene');
@@ -199,8 +211,8 @@ class Burning extends Phaser.Scene {
         }
     }
 
-    KillCheck() {
-        if (!this.upPressed && this.isWoman && this.victim.x < 950 && !this.victimDead) {
+    KillCheck() { // Check whether the player has missed or scored a kill
+        if (!this.upPressed && this.isWoman && this.victim.x < 950 && !this.victimDead) { // When woman is killed
             this.misses ++;
             this.missesLeft.text = "Misses : " + this.misses + " / 3";
             this.begin = true;
@@ -209,12 +221,12 @@ class Burning extends Phaser.Scene {
             this.victim.destroy();
             if (!this.isDisplayed) {
                 this.womanKilledUI.setAlpha(1);
-                this.WomanScreamingSFX.play();
+                this.WomanScreamingSFX.play(); // Make woman scream
                 this.isDisplayed = true;
             }
             this.victimDestroyed = true;
             this.victimDead = true;
-        } else if (this.isBandit && this.victim.x > 950 && !this.banditEscaped) {
+        } else if (this.isBandit && this.victim.x > 950 && !this.banditEscaped) { // If bandit has escaped the player
             this.misses ++;
             this.missesLeft.text = "Misses : " + this.misses + " / 3";
             if (!this.isDisplayed) {
@@ -223,14 +235,14 @@ class Burning extends Phaser.Scene {
             }
             console.log("escaped");
             this.banditEscaped = true;
-        } else if (!this.upPressed && this.isBandit && this.victim.x < 950 && !this.banditEscaped) {
+        } else if (!this.upPressed && this.isBandit && this.victim.x < 950 && !this.banditEscaped) { // If the player killed the bandit
             this.banditsKilled ++;
             this.banditsKilledDisplay.text = "Bandits : " + this.banditsKilled + " / 10";
             this.begin = true;
             this.reveal = false;
             this.flee = false;
             if (!this.isDisplayed) {
-                this.BanditsScreamingSFX.play();
+                this.BanditsScreamingSFX.play(); // Make bandit scream
                 this.isDisplayed = true;
             }
             this.victim.destroy();
@@ -261,27 +273,7 @@ class Burning extends Phaser.Scene {
         //this.victim.body.setAllowGravity(false).setVelocityX(this.difficulty);
     }
 
-    // new round, new button combination displayed on the screen
-    PrepareRound() {
-        let keyConfig = {
-            fontFamily: 'Courier',
-            fontSize: '28px',
-            backgroundColor: '#292929',
-            color: '#ffffff',
-            align: 'left',
-            padding: {
-                top: 5,
-                bottom: 5,
-                left: 20,
-                right: 20,
-            },
-            fixedWidth: 150
-        }
-        this.roundLeft.text = "Round " + this.round;
-        this.victory = false;
-    }
-
-    Slice() {
+    Slice() { // Allows player to attack
         if (!this.keyPressed) {
             this.Attack();
             this.time.delayedCall(500, () => {
@@ -314,10 +306,8 @@ class Burning extends Phaser.Scene {
             this.attack.setAlpha(0);
           }
     }
-
-    // Victory/Defeat Condition
-
-    GameOver() {
+    
+    GameOver() { // Victory/Defeat Condition
         this.input.keyboard.on('keydown', (event) => {
             //console.log(event);
             switch(event.key) {
