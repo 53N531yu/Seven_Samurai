@@ -41,8 +41,8 @@ class Load extends Phaser.Scene {
         this.load.image('Menu', 'img/MainMenu.png');
         this.load.image('Credits', 'img/Credits.png');
         this.load.image('DuelTutorial', 'img/DuelInstructions.png');
-        this.load.image('Scene2Tutorial', 'img/Scene2Instructions.png');
-        this.load.image('Scene3Tutorial', 'img/Scene3Instructions.png');
+        this.load.image('BanditsInstructions', 'img/BanditsInstructions.png');
+        this.load.image('BurningInstructions', 'img/BurningInstructions.png');
         this.load.image('VictoryScreen', 'img/VictoryScreen.png');
         this.load.image('DefeatScreen', 'img/DefeatScreen.png');
 

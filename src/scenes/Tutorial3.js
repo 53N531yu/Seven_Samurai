@@ -5,7 +5,7 @@ class Tutorial3 extends Phaser.Scene {
 
     create() {
         // add tutorial 1 screen text
-        this.tutorial1 = this.add.tileSprite(0, 0, 0, 0, 'Scene3Tutorial').setOrigin(0, 0);
+        this.tutorial1 = this.add.tileSprite(0, 0, 0, 0, 'BanditsInstructions').setOrigin(0, 0);
         
         cursors = this.input.keyboard.createCursorKeys();  
         // check for UP input

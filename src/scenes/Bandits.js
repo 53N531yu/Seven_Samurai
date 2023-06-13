@@ -32,7 +32,7 @@ class Bandits extends Phaser.Scene {
                 left: 20,
                 right: 20,
             },
-            fixedWidth: 350
+            fixedWidth: 410
         }
 
         let missConfig = {
@@ -103,10 +103,13 @@ class Bandits extends Phaser.Scene {
         // Attack or Pass
         this.isAttack = false;
         this.isPass = false;
+        this.hasPressed = false;
 
         // Booleans to prevent things from happening 60 times a second
         this.restarted = false;
         this.displayedKeys = false;
+        this.defeat = false;
+        this.victory = false;
     }
 
     update() {
@@ -121,11 +124,17 @@ class Bandits extends Phaser.Scene {
             this.tempCombination = [];
 
             this.displayedKeys = false;
+            this.hasPressed = false;
+            this.victory = false;
+            this.defeat = false;
+            this.displayedKeys = false;
             
             // next phase
             this.time.delayedCall(1500, () => {
                 this.prepare = false;
                 this.fight = true;
+                this.readyStance.setAlpha(1);
+                this.duelStance.setAlpha(0);
             });
         }
 
@@ -139,27 +148,68 @@ class Bandits extends Phaser.Scene {
                 this.displayedKeys = true;
             }
 
-            if (this.bandit.x < -500) {
-                this.bandit.destroy();
-                this.AttackorPassUI.destroy();
-                this.fight = false;
-                this.prepare = true;
+            if (!this.defeat) {
+                if (!this.keyPressed) {
+                    // Checks if the correct keys are being pressed.
+                    this.CheckKeyPress();
+                }
+                this.ResetKeyPress();
+            }
+            // Ensures that holding down a key doesn't input it multiple times.
+
+            console.log(this.hasPressed);
+
+            if (this.bandit.x < 100 && this.victory) {
+                this.readyStance.setAlpha(0);
+                this.duelStance.setAlpha(1);
+                this.killBandit();
+            }
+
+            if (this.bandit.x < -500 && this.isPass && !this.keyPressed) {
+                this.killBandit();
+                this.banditsRemaining--;
+                this.banditsLeftDisplay.text = "Bandits Remaining : " + this.banditsRemaining;
+            }
+            
+            if (this.bandit.x < -500 && this.isPass && this.hasPressed) {
+                this.killBandit();
+                this.misses++;
+                this.missesDisplay.text = "Misses : " + this.misses + " / 5";
+            }
+
+            if (this.bandit.x < -500 && this.isAttack) {
+                this.killBandit();
+                this.misses++;
+                this.missesDisplay.text = "Misses : " + this.misses + " / 5";
             }
         }
 
         // Check for victory or defeat
-        // else { 
-        //     // Ensures that that the game doesn't go pass 7 rounds.
-        //     if (this.round < 7) {
-        //         this.begin = true; 
-        //         this.Prepared = false;
-        //     } else if (this.round >= 7) { // If the player wins all 7 rounds, they win the game
-        //         this.bgm.stop();
-        //         this.scene.stop('playScene');
-        //         this.scene.start('duelVictoryScene');
-        //     }
+        else { 
+            // Ensures that that the game doesn't go pass 7 rounds.
+            if (this.banditsRemaining > -1 || this.misses < 5) {
+                this.fight = true; 
+                this.prepare = true;
+
+            } else if (this.banditsRemaining < 1) { // If the player wins all 7 rounds, they win the game
+                this.bgm.stop();
+                this.scene.stop('banditScene');
+                this.scene.start('duelVictoryScene');
+            } else if (this.misses > 4) { 
+                this.bgm.stop();
+                this.scene.stop('banditScene');
+                this.scene.start('duelDefeatScene');
+            }
             
-        // }
+        }
+    }
+
+    killBandit() {
+        this.bandit.destroy();
+        this.AttackorPassUI.destroy();
+        this.fight = false;
+        this.isAttack = false;
+        this.isPass = false;
     }
 
     AttackOrPass() { // A bandit or a woman is randomly generated
@@ -176,7 +226,7 @@ class Bandits extends Phaser.Scene {
 
     // Spawn mounted bandit
     spawnBandit() {
-        this.bandit = this.physics.add.sprite(1000, 450, 'HorsebackBandit').setAlpha(1).setDepth(2).setVelocityX(-200).setVelocityY(35);
+        this.bandit = this.physics.add.sprite(1000, 450, 'HorsebackBandit').setAlpha(1).setDepth(2).setVelocityX(-250).setVelocityY(44);
     }
 
     // new bandit, new button combination displayed on the screen
@@ -216,33 +266,41 @@ class Bandits extends Phaser.Scene {
             this.currentKey = "up";
             this.upPressed = false;
             this.keyPressed = true;
+            this.hasPressed = true;
           } else if (cursors.down.isDown && this.downPressed == true) {
             // console.log("down");
             this.currentKey = "down";
             this.downPressed = false;
             this.keyPressed = true;
+            this.hasPressed = true;
           } else if (cursors.left.isDown && this.leftPressed == true) {
             // console.log("left");
             this.currentKey = "left";
             this.leftPressed = false;
             this.keyPressed = true;
+            this.hasPressed = true;
           } else if (cursors.right.isDown && this.rightPressed == true) {
             // console.log("right");
             this.currentKey = "right";
             this.rightPressed = false;
             this.keyPressed = true;
+            this.hasPressed = true;
           }
 
           // Check if the player pressed the correct keys. Wrong key pressed = defeat. Correct keys pressed = victory.
-          if (this.currentKey == this.tempCombination[0]) {
-            this.tempCombination.shift();
-          } else if (this.tempCombination.length == 0) {
-            this.victory = true;
-          } else if (this.currentKey != this.tempCombination[0] && this.keyPressed){
-            this.defeat = true;
-            console.log("defeat!");
+          if (this.isAttack == true) {
+              if (this.currentKey == this.tempCombination[0]) {
+                this.tempCombination.shift();
+              } else if (this.tempCombination.length == 0) {
+                if (!this.victory) {
+                    this.banditsRemaining--;
+                    this.banditsLeftDisplay.text = "Bandits Remaining : " + this.banditsRemaining;
+                    this.victory = true
+                }
+              } else if (this.currentKey != this.tempCombination[0] && this.keyPressed){
+                this.defeat = true;
+              }
           }
-          
     }
 
     ResetKeyPress() { // Ensures that one key press isn't inputted multiple times.
