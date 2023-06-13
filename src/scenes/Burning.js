@@ -171,7 +171,9 @@ class Burning extends Phaser.Scene {
                 this.flee = false;
             } else {
                 // Make the victim flee from the flee with "animated" running
-                this.victim.setVelocityX(250); 
+                if (!this.victimDead) {
+                    this.victim.setVelocityX(250); 
+                }
                 if (this.bandit1Revealed) {
                     this.victim.anims.play('bandit1', true);
                 } else if (this.bandit2Revealed) {
@@ -180,10 +182,7 @@ class Burning extends Phaser.Scene {
                     this.victim.anims.play('womanAnim', true);
                 }
 
-                if (!this.victimDead) {
-                    this.KillCheck();
-                    this.victimDead = true;
-                }
+                this.KillCheck();
     
                 if (this.victim.x > 1600) { // Destroys the bandits or women when they're out of the scene
                     this.victim.destroy();
@@ -197,15 +196,16 @@ class Burning extends Phaser.Scene {
             if (this.misses < 3 && this.banditsKilled < 10) {
                 this.begin = true; 
                 this.reveal = false;
+                this.flee = false;
             } else if (this.banditsKilled >= 10) { // If the player kills 10 bandits, they win the game
                 this.bgm.stop();
                 this.scene.stop('playScene');
-                this.scene.start('duelVictoryScene');
+                this.scene.start('burningVictoryScene');
                 console.log("victory");
             } else if (this.misses >= 3) { // If the player has 3 misses, they lose the game
                 this.bgm.stop();
                 this.scene.stop('playScene');
-                this.scene.start('duelDefeatScene');
+                this.scene.start('burningDefeatScene');
                 console.log("defeat");
             }
         }
@@ -215,7 +215,6 @@ class Burning extends Phaser.Scene {
         if (!this.upPressed && this.isWoman && this.victim.x < 950 && !this.victimDead) { // When woman is killed
             this.misses ++;
             this.missesLeft.text = "Misses : " + this.misses + " / 3";
-            this.begin = true;
             this.reveal = false;
             this.flee = false;
             this.victim.destroy();
@@ -224,9 +223,10 @@ class Burning extends Phaser.Scene {
                 this.WomanScreamingSFX.play(); // Make woman scream
                 this.isDisplayed = true;
             }
+            this.isWoman = false;
             this.victimDestroyed = true;
             this.victimDead = true;
-        } else if (this.isBandit && this.victim.x > 950 && !this.banditEscaped) { // If bandit has escaped the player
+        } else if (this.isBandit && this.victim.x > 950) { // If bandit has escaped the player
             this.misses ++;
             this.missesLeft.text = "Misses : " + this.misses + " / 3";
             if (!this.isDisplayed) {
@@ -235,10 +235,11 @@ class Burning extends Phaser.Scene {
             }
             console.log("escaped");
             this.banditEscaped = true;
+            this.isBandit = false;
+            this.flee = false;
         } else if (!this.upPressed && this.isBandit && this.victim.x < 950 && !this.banditEscaped) { // If the player killed the bandit
             this.banditsKilled ++;
             this.banditsKilledDisplay.text = "Bandits : " + this.banditsKilled + " / 10";
-            this.begin = true;
             this.reveal = false;
             this.flee = false;
             if (!this.isDisplayed) {
@@ -247,6 +248,7 @@ class Burning extends Phaser.Scene {
             }
             this.victim.destroy();
             this.banditEscaped = true;
+            this.isBandit = false;
             this.victimDestroyed = true;
             this.victimDead = true;
         }
@@ -258,11 +260,13 @@ class Burning extends Phaser.Scene {
             this.victim = this.physics.add.sprite(750, 450, 'Bandit1').setDepth(1);
             this.isBandit = true;
             this.bandit1Revealed = true;
+            console.log(this.isBandit);
         }
         else if (this.victimSpawn === 1) {
             this.victim = this.physics.add.sprite(750, 450, 'Bandit2').setDepth(1);
             this.isBandit = true;
             this.bandit2Revealed = true;
+            console.log(this.isBandit);
         }
         else {
             this.victim = this.physics.add.sprite(750, 450, 'Woman').setDepth(1);
