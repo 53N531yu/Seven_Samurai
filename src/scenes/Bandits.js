@@ -165,7 +165,7 @@ class Bandits extends Phaser.Scene {
                 this.killBandit();
             }
 
-            if (this.bandit.x < -500 && this.isPass && !this.keyPressed) {
+            if (this.bandit.x < -500 && this.isPass && !this.keyPressed && !this.hasPressed) {
                 this.killBandit();
                 this.banditsRemaining--;
                 this.banditsLeftDisplay.text = "Bandits Remaining : " + this.banditsRemaining;
@@ -187,18 +187,18 @@ class Bandits extends Phaser.Scene {
         // Check for victory or defeat
         else { 
             // Ensures that that the game doesn't go pass 7 rounds.
-            if (this.banditsRemaining > -1 || this.misses < 5) {
+            if (this.banditsRemaining > -1 && this.misses < 5) {
                 this.fight = true; 
                 this.prepare = true;
 
             } else if (this.banditsRemaining < 1) { // If the player wins all 7 rounds, they win the game
                 this.bgm.stop();
                 this.scene.stop('banditScene');
-                this.scene.start('duelVictoryScene');
+                this.scene.start('banditVictoryScene');
             } else if (this.misses > 4) { 
                 this.bgm.stop();
                 this.scene.stop('banditScene');
-                this.scene.start('duelDefeatScene');
+                this.scene.start('banditDefeatScene');
             }
             
         }
