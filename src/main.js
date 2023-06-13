@@ -1,22 +1,16 @@
 // Name : Oscar Tiong
-// Game Title : Bubble Run
-// Hours spent : 25 Hours
+// Game Title : Seven Samurai
+// Hours spent : 50 hours
 
-/* Creative tilt (Aethestics):
-- This is an endless runner set in a world that is powered by classical music. 
-- The game takes place in the romantic caves, one of the many areas of this world.
-- Run across this dreamy cave, which formed by the romantic motives seen in the music of multiple composers.
+// 5 of Phaser's major components : 
+/* 
+ - Physics System is used for the movement of enemies in scene 2 and 3.
+ - A camera is used to display the scene.
+ - Text objects are used to keep track of the player's progress.
+ - The animation manager is used to animated the bandits and women running away in scene 2.
+ - The tween manager was used to make the UI of the scenes fade in and out of the screen.
 */
 
-/* Creative tilt (Technicalities)
-- At first, you are not able to jump manually, so you must rely on bounce pads jump on platforms.
-- You can collect jump pieces in this game. When you collect 3, you'll temporarily be able to jump manually and collect coins.
-- Collecting coins will make the platforms and obstacles scroll by faster and faster. 
-*/
-// Original: 4/20/17 (Phaser CE version)
-// Updated: 5/1/23 (Phaser 3.55)
-
-// keep me honest
 'use strict';
 
 // define and configure main Phaser game object
