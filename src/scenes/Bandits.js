@@ -16,7 +16,7 @@ class Bandits extends Phaser.Scene {
         // set up Phaser-provided cursor key input
         cursors = this.input.keyboard.createCursorKeys();
 
-        // Display Score
+        // Display Bandits remaining, misses, and the keys to press
         this.banditsRemaining = 20;
         this.misses = 0
 
@@ -70,19 +70,11 @@ class Bandits extends Phaser.Scene {
         this.missesDisplay = this.add.text(16, 128, "Misses : " + this.misses + " / 5", missConfig).setDepth(5);
         
         this.pressKey = this.add.text(16, 192, "Press: ", pressConfig).setDepth(5);
-
-        // Display UI
-        // this.RoundWon = this.physics.add.sprite(800, 450, 'RoundWon').setAlpha(0);
-        // this.readyUI = this.physics.add.sprite(800, 450, 'ReadyUI').setAlpha(0);
-        // this.duelUI = this.physics.add.sprite(800, 450, 'DuelUI').setAlpha(0);
         
 
         // Background sound
         this.bgm = this.sound.add('Scene3BackgroundSFX', {volume: 1, loop : true});
         this.bgm.play();
-
-        //SFX
-        // this.ReadySFX = this.sound.add('ReadySFX', {volume: 0.5, loop : false});
 
         // Phases
         this.prepare = true;
@@ -113,7 +105,7 @@ class Bandits extends Phaser.Scene {
     }
 
     update() {
-        if (!this.restarted) {
+        if (!this.restarted) { // Allow the player to restart the scene or quit to main menu
             this.GameOver();
             this.restarted = true;
         }
@@ -149,35 +141,32 @@ class Bandits extends Phaser.Scene {
             }
 
             if (!this.defeat) {
-                if (!this.keyPressed) {
+                if (!this.keyPressed) { // Ensures that holding down a key doesn't input it multiple times.
                     // Checks if the correct keys are being pressed.
                     this.CheckKeyPress();
                 }
                 this.ResetKeyPress();
             }
-            // Ensures that holding down a key doesn't input it multiple times.
-
-            console.log(this.hasPressed);
-
-            if (this.bandit.x < 100 && this.victory) {
+            
+            if (this.bandit.x < 100 && this.victory) { // Silce animation when player inputs keys correctly
                 this.readyStance.setAlpha(0);
                 this.duelStance.setAlpha(1);
                 this.killBandit();
             }
 
-            if (this.bandit.x < -500 && this.isPass && !this.keyPressed && !this.hasPressed) {
+            if (this.bandit.x < -500 && this.isPass && !this.keyPressed && !this.hasPressed) { // Bandit dies in the village if player lets it pass
                 this.killBandit();
                 this.banditsRemaining--;
                 this.banditsLeftDisplay.text = "Bandits Remaining : " + this.banditsRemaining;
             }
             
-            if (this.bandit.x < -500 && this.isPass && this.hasPressed) {
+            if (this.bandit.x < -500 && this.isPass && this.hasPressed) { // Miss if the player tries to kill the bandit when they're supposed to let it pass.
                 this.killBandit();
                 this.misses++;
                 this.missesDisplay.text = "Misses : " + this.misses + " / 5";
             }
 
-            if (this.bandit.x < -500 && this.isAttack) {
+            if (this.bandit.x < -500 && this.isAttack) { // Miss if the player doesn't press all the keys on time
                 this.killBandit();
                 this.misses++;
                 this.missesDisplay.text = "Misses : " + this.misses + " / 5";
@@ -186,16 +175,16 @@ class Bandits extends Phaser.Scene {
 
         // Check for victory or defeat
         else { 
-            // Ensures that that the game doesn't go pass 7 rounds.
+            // Ensures that that the game doesn't go pass 5 misses or less than 1 bandit left remaining
             if (this.banditsRemaining > -1 && this.misses < 5) {
                 this.fight = true; 
                 this.prepare = true;
 
-            } else if (this.banditsRemaining < 1) { // If the player wins all 7 rounds, they win the game
+            } else if (this.banditsRemaining < 1) { // If the player kills all bandits, victory
                 this.bgm.stop();
                 this.scene.stop('banditScene');
                 this.scene.start('banditVictoryScene');
-            } else if (this.misses > 4) { 
+            } else if (this.misses > 4) {  // If the playing misses 5 times, defeat
                 this.bgm.stop();
                 this.scene.stop('banditScene');
                 this.scene.start('banditDefeatScene');
@@ -204,7 +193,7 @@ class Bandits extends Phaser.Scene {
         }
     }
 
-    killBandit() {
+    killBandit() { // function to destroy bandit and move onto the next phase
         this.bandit.destroy();
         this.AttackorPassUI.destroy();
         this.fight = false;
@@ -212,7 +201,7 @@ class Bandits extends Phaser.Scene {
         this.isPass = false;
     }
 
-    AttackOrPass() { // A bandit or a woman is randomly generated
+    AttackOrPass() { // Randomly tell the player if they should let the bandit pass or kill it
         this.AttackOrPassRandom = Math.floor(Math.random() * 2);
         if (this.AttackOrPassRandom === 0) {
             this.AttackorPassUI = this.physics.add.sprite(800, 450, 'AttackUI').setDepth(5);
@@ -318,9 +307,7 @@ class Bandits extends Phaser.Scene {
           this.keyPressed = false;
     }
 
-    // Victory/Defeat Condition
-
-    GameOver() {
+    GameOver() { // Victory/Defeat Condition
         this.input.keyboard.on('keydown', (event) => {
             //console.log(event);
             switch(event.key) {
